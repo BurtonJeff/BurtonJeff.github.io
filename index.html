@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Particles</title>
+    <script>
+      window.onload = function(){
+
+        // Create the canvas and its context
+        var canvas = document.createElement("canvas"),
+        c = canvas.getContext("2d"),
+        particles = {},
+        particalIndex = 0,
+        particleCount = 1;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        document.body.appendChild(canvas);
+
+        // Fill canvas with coloured rectangle
+        c.fillStyle = "white";
+        c.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Create the particle
+        function particle(size, vX, vY){
+          this.posX = canvas.width / 2;
+          this.posY = canvas.height / 8;
+          this.vX = vX;
+          this.vY = vY;
+          this.maxLife = Math.random() * 300;
+          this.life = 0;
+          this.gravity = 0.3;
+          this.size = size;
+          this.growth = 0.1;
+          particalIndex++;
+          this.id = particalIndex;
+          particles[particalIndex] = this;
+          this.colour = "rgba(" + parseInt(Math.random() * 255) + "," +
+            parseInt(Math.random() * 255) +"," +
+            parseInt(Math.random() * 255) + ",0.8)";
+        }
+
+        // Draw the particle
+        particle.prototype.draw = function () {
+          this.posX += this.vX;
+          this.posY += this.vY;
+          this.vY += this.gravity;
+          this.size += this.growth;
+
+          // Reverse verical direction if required
+          if (this.posY > window.innerHeight){
+            this.vY = this.vY * -1;
+          }
+
+          // Increase lifetime and delete if expired
+          this.life++;
+          if (this.life >= this.maxLife){
+            delete particles[this.id];
+          }
+
+          c.fillStyle = this.colour;
+          //c.fillRect(this.posX, this.posY, this.height, this.width);
+          c.beginPath();
+          c.arc(this.posX, this.posY, this.size, 0, Math.PI*2, true);
+          c.closePath();
+          //c.stroke();
+          c.fill();
+        };
+
+        setInterval(function(){
+          //c.fillStyle = "white";
+          c.fillStyle = "rgba(255, 255, 255, 0.2)";
+          c.fillRect(0, 0, canvas.width, canvas.height);
+
+          for (var i = 0; i <= particleCount; i++){
+            new particle(2, Math.random() * 10 - 5, Math.random() * 10 - 5);
+          }
+
+          for (var i in particles){
+            particles[i].draw();
+          }
+        }, 30)
+      }
+    </script>
+    <style>
+      body, html{margin: 0px; padding: 0px; width:  100%; height: 100%; overflow: hidden;}
+    </style>
+  </head>
+  <body>
+
+  </body>
+</html>
